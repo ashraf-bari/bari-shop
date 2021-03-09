@@ -12,41 +12,49 @@ import CheckoutPage from './pages/checkout/checkout.component';
 
 import Header from './components/header/header.component';
 
-import { setCurrentUser } from './redux/user/user.actions';
+import { checkUserSession } from './redux/user/user.actions';
+// import { setCurrentUser } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
 // import { selectShopCollectionsForPreview } from './redux/shop/shop.selectors';
 
-import { auth, createUserProfileDocument } from './firebase/firebase.utils';
+// import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
 class App extends React.Component {
 
-  unsubscribeFromAuth = null;
+  // unsubscribeFromAuth = null;
 
   componentDidMount() {
-    const { setCurrentUser } = this.props;
 
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
+    const { checkUserSession } = this.props;
+    checkUserSession();
 
-        userRef.onSnapshot(snapShot => {
-          setCurrentUser({
-            id: snapShot.id,
-            ...snapShot.data()
-          })
+    // Before Redux-Saga
+    // ==========================================================================
+    // const { setCurrentUser } = this.props;
 
-        });
-      }
+    // this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+    //   if (userAuth) {
+    //     const userRef = await createUserProfileDocument(userAuth);
 
-      setCurrentUser(userAuth);
-      // addCollectionAndDocuments('collections', collectionsArray.map(({ title, items }) => ({ title, items })));
+    //     userRef.onSnapshot(snapShot => {
+    //       setCurrentUser({
+    //         id: snapShot.id,
+    //         ...snapShot.data()
+    //       })
 
-    });
+    //     });
+    //   }
+
+    //   setCurrentUser(userAuth);
+    // =================================================================================
+    // addCollectionAndDocuments('collections', collectionsArray.map(({ title, items }) => ({ title, items })));
+
+    //});
   }
 
 
   componentWillUnmount() {
-    this.unsubscribeFromAuth();
+    // this.unsubscribeFromAuth();
   }
 
   render() {
@@ -69,8 +77,10 @@ const mapStateToProps = createStructuredSelector({
   // collectionsArray: selectShopCollectionsForPreview,
 });
 
+// We are not actually using the mapDispatchToProps
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user))
+  checkUserSession: () => dispatch(checkUserSession()),
+  // setCurrentUser: (user) => dispatch(setCurrentUser(user))
 });
 
 
